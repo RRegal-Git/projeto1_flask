@@ -23,6 +23,15 @@ def home():
         "author": "Ricardo Regal"          # Teu nome (CV!)
     })
 
+# Rota dinâmica: aceita qualquer nome
+@app.route('/hello/<nome>', methods=['GET'])
+def hello_person(nome):
+    return jsonify({
+        "message": f"Olá {nome}! 🌟",
+        "status": "Personalizado",
+        "timestamp": "2026-01-09"
+    })
+
 # 6. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
