@@ -1,0 +1,11 @@
+# Virtual env (não vai para o repo)
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Flask / OS extras comuns
+instance/
+.DS_Store
