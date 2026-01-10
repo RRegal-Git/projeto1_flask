@@ -23,7 +23,7 @@ def home():
         "author": "Ricardo Regal"          # Teu nome (CV!)
     })
 
-# Rota dinâmica: aceita qualquer nome
+# 6. Rota dinâmica: aceita qualquer nome
 @app.route('/hello/<nome>', methods=['GET'])
 def hello_person(nome):
     return jsonify({
@@ -32,7 +32,28 @@ def hello_person(nome):
         "timestamp": "2026-01-09"
     })
 
-# 6. LIGAR A API (só executa se correr este ficheiro diretamente)
+# 7. ROTA DE SAÚDE: http://localhost:5000/health
+# Ideia: é o "teste rápido" para confirmar que a API está viva.
+# Muito usado por Docker/servidores/monitorização para ver se está tudo ok.
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({
+        "status": "ok",                 # A API está online
+        "service": "projeto1_flask"     # Nome do serviço (ajuda em logs)
+    }), 200  # 200 = "OK"
+
+# 7.1. ERRO 404 EM JSON (rota não encontrada)
+# Por defeito o Flask devolve uma página HTML quando falhas uma rota.
+# Como isto é uma API, queremos responder em JSON (mais consistente para quem consome).
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        "error": "not found",           # Tipo de erro
+        "message": "Rota não existe"    # Explicação simples para humanos
+    }), 404  # 404 = "não encontrado"
+
+
+# 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
     # debug=True: reinicia auto com erros
