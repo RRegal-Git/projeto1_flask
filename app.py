@@ -1,5 +1,5 @@
 # 1. IMPORTAR FLASK (biblioteca para criar APIs web)
-from flask import Flask, jsonify  # Flask=framework, jsonify=converte dict→JSON
+from flask import Flask, jsonify, request  # Flask=framework, jsonify=converte dict→JSON
 
 # 2. CRIAR A APLICAÇÃO (o "cérebro" da API)
 app = Flask(__name__)  # __name__ = nome deste ficheiro (app.py)
@@ -42,7 +42,7 @@ def health():
         "service": "projeto1_flask"     # Nome do serviço (ajuda em logs)
     }), 200  # 200 = "OK"
 
-# 7.1. ERRO 404 EM JSON (rota não encontrada)
+# 7.1. Rota inexistente : ERRO 404 EM JSON (rota não encontrada)
 # Por defeito o Flask devolve uma página HTML quando falhas uma rota.
 # Como isto é uma API, queremos responder em JSON (mais consistente para quem consome).
 @app.errorhandler(404)
@@ -52,6 +52,21 @@ def not_found(e):
         "message": "Rota não existe"    # Explicação simples para humanos
     }), 404  # 404 = "não encontrado"
 
+# 7.2. ROTA POST: RECEBER DADOS
+# Aqui usamos o método POST. O 'request.get_json()' vai ler
+# o que enviarmos no corpo do pedido.
+@app.route('/echo', methods=['POST'])
+def echo():
+    dados_recebidos = request.get_json() # Captura o JSON enviado
+    
+    if not dados_recebidos:
+        return jsonify({"erro": "Nenhum dado enviado"}), 400
+
+    return jsonify({
+        "mensagem": "Recebi os teus dados com sucesso!",
+        "dados": dados_recebidos,
+        "status": "Processado"
+    }), 201 # 201 = Created (sucesso na criação/envio)
 
 # 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
