@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request  # Flask=framework, jsonify=converte d
 
 # 2. CRIAR A APLICAÇÃO (o "cérebro" da API)
 app = Flask(__name__)  # __name__ = nome deste ficheiro (app.py)
+app.json.ensure_ascii = False  # <--- Esta linha mágica permite UTF-8 no JSON
 
 # 3. PRIMEIRA ROTA: http://localhost:5000/hello
 @app.route('/hello', methods=['GET'])  # @ = decorador, GET = pedido "ler"
@@ -57,16 +58,23 @@ def not_found(e):
 # o que enviarmos no corpo do pedido.
 @app.route('/echo', methods=['POST'])
 def echo():
-    dados_recebidos = request.get_json() # Captura o JSON enviado
+    dados_recebidos = request.get_json()
     
     if not dados_recebidos:
         return jsonify({"erro": "Nenhum dado enviado"}), 400
 
+    # --- NOVO: Lógica de processamento ---
+    # Vamos verificar se existe 'nome' e passá-lo para MAIÚSCULAS
+    nome_original = dados_recebidos.get('nome', 'Visitante') # Se não houver nome, usa 'Visitante'
+    nome_gritado = nome_original.upper() # A função mágica do Python
+    # -------------------------------------
+
     return jsonify({
-        "mensagem": "Recebi os teus dados com sucesso!",
-        "dados": dados_recebidos,
-        "status": "Processado"
-    }), 201 # 201 = Created (sucesso na criação/envio)
+        "mensagem": "Recebi os teus dados!",
+        "input_original": dados_recebidos,
+        "resposta_backend": f"OLÁ {nome_gritado}!!", # Usamos aqui a variável nova
+        "status": "Processado com lógica"
+    }), 201  # 201 = "Criado"
 
 # 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
