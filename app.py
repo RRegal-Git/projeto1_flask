@@ -5,6 +5,10 @@ from flask import Flask, jsonify, request  # Flask=framework, jsonify=converte d
 app = Flask(__name__)  # __name__ = nome deste ficheiro (app.py)
 app.json.ensure_ascii = False  # <--- Esta linha mágica permite UTF-8 no JSON
 
+# --- A NOSSA BASE DE DADOS (Simples e em Memória) ---
+tarefas = [] 
+# ----------------------------------------------------
+
 # 3. PRIMEIRA ROTA: http://localhost:5000/hello
 @app.route('/hello', methods=['GET'])  # @ = decorador, GET = pedido "ler"
 def hello():  # Função que executa quando alguém visita /hello
@@ -75,6 +79,29 @@ def echo():
         "resposta_backend": f"OLÁ {nome_gritado}!!", # Usamos aqui a variável nova
         "status": "Processado com lógica"
     }), 201  # 201 = "Criado"
+
+# 7.3. ROTA GET: LISTAR TAREFAS
+# Aqui usamos o método GET para devolver a lista de tarefas
+# que está na "base de dados" em memória.
+@app.route('/tarefas', methods=['GET'])
+def listar_tarefas():
+    # Devolve a lista completa em formato JSON
+    return jsonify(tarefas)
+
+# 7.4. ROTA POST: CRIAR TAREFA
+# Aqui usamos o método POST para criar uma nova tarefa
+# e adicioná-la à lista em memória.
+@app.route('/tarefas', methods=['POST'])
+def criar_tarefa():
+    # 1. Receber o JSON enviado pelo Postman
+    nova_tarefa = request.get_json()
+    
+    # 2. Adicionar à nossa lista "tarefas"
+    tarefas.append(nova_tarefa)
+    
+    # 3. Responder que correu tudo bem
+    return jsonify({"mensagem": "Tarefa criada com sucesso!", "tarefa": nova_tarefa}), 201
+
 
 # 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
