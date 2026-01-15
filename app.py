@@ -102,6 +102,23 @@ def criar_tarefa():
     # 3. Responder que correu tudo bem
     return jsonify({"mensagem": "Tarefa criada com sucesso!", "tarefa": nova_tarefa}), 201
 
+# 7.5. ROTA GET: OBTER TAREFA POR ID
+# Aqui usamos o método GET para obter uma tarefa específica
+# pelo seu ID.
+@app.route('/tarefas/<int:id>', methods=['GET'])
+def obter_tarefa(id):
+    print(f"--> ID SOLICITADO: {id} (Tipo: {type(id)})")
+    print(f"--> LISTA COMPLETA: {tarefas}")
+    
+    for tarefa in tarefas:
+        print(f"Comparando com tarefa ID: {tarefa.get('id')} (Tipo: {type(tarefa.get('id'))})")
+        if tarefa['id'] == id:
+            print("--> ENCONTREI!")
+            return jsonify(tarefa)
+            
+    print("--> NÃO ENCONTREI NADA")
+    return jsonify({"erro": "Tarefa não encontrada"}), 404
+
 
 # 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
