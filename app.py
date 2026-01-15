@@ -119,6 +119,49 @@ def obter_tarefa(id):
     print("--> NÃO ENCONTREI NADA")
     return jsonify({"erro": "Tarefa não encontrada"}), 404
 
+# 7.6. ROTA PUT:
+# ATUALIZAR uma tarefa (PUT), dado o seu ID.
+@app.route('/tarefas/<int:id>', methods=['PUT'])
+def atualizar_tarefa(id):
+    # 1. Procurar a tarefa
+    tarefa_encontrada = None
+    for t in tarefas:
+        if t['id'] == id:
+            tarefa_encontrada = t
+            break
+            
+    if not tarefa_encontrada:
+        return jsonify({"erro": "Tarefa não encontrada"}), 404
+        
+    # 2. Receber os dados novos
+    dados_novos = request.get_json()
+    
+    # 3. Atualizar os campos (mantemos o ID original por segurança)
+    tarefa_encontrada['titulo'] = dados_novos.get('titulo', tarefa_encontrada['titulo'])
+    tarefa_encontrada['concluido'] = dados_novos.get('concluido', tarefa_encontrada['concluido'])
+    
+    return jsonify(tarefa_encontrada)
+
+# 7.7. ROTA DELETE:
+# REMOVER uma tarefa (DELETE), dado o seu ID.
+
+# APAGAR uma tarefa (DELETE)
+@app.route('/tarefas/<int:id>', methods=['DELETE'])
+def apagar_tarefa(id):
+    # Vamos usar uma técnica diferente para remover:
+    # Recriar a lista mantendo APENAS o que NÃO for o ID que queremos apagar.
+    # (É mais seguro do que remover itens enquanto percorremos a lista)
+    
+    global tarefas # Precisamos de dizer que vamos mexer na variável global
+    
+    lista_filtrada = [t for t in tarefas if t['id'] != id]
+    
+    # Se o tamanho for igual, é porque não apagou nada (ID não existia)
+    if len(lista_filtrada) == len(tarefas):
+        return jsonify({"erro": "Tarefa não encontrada"}), 404
+        
+    tarefas = lista_filtrada
+    return jsonify({"mensagem": "Tarefa apagada com sucesso"}), 200
 
 # 8. LIGAR A API (só executa se correr este ficheiro diretamente)
 if __name__ == '__main__':
