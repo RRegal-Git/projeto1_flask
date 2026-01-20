@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: projeto1-flask-db
+    environment:
+      POSTGRES_USER: flask_user
+      POSTGRES_PASSWORD: flask_password
+      POSTGRES_DB: tarefas_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   web:
     build: .
     container_name: projeto1-flask-web
@@ -8,4 +21,10 @@ services:
       - "5000:5000"
     environment:
       - FLASK_ENV=development
+      - DATABASE_URL=postgresql://flask_user:flask_password@db:5432/tarefas_db
+    depends_on:
+      - db
     restart: unless-stopped
+
+volumes:
+  postgres_data:
